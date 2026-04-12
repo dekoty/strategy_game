@@ -2,6 +2,7 @@
 
 #include "Cell.hpp"
 #include "../common/Point.hpp"
+#include <memory>
 
 class GameBoard {
     static const int SIZE = 10;
@@ -10,7 +11,7 @@ class GameBoard {
 public:
     GameBoard();
 
-    void setUnitInBoard(Unit* u, Point p);
+    void setUnitInBoard(std::unique_ptr<Unit> u, Point p);
 
     void moveUnit(Point from, Point target);
 

@@ -6,10 +6,12 @@
 class Unit {
     int hp;
     int damage;
-    std::string symbol = ".";
+    std::string symbol;
 
 public:
-    Unit(std::string sym = ".") : hp(100), damage(10), symbol(sym) {}
+    Unit(int h = 100,int d = 10, std::string sym = ".") : hp(h), damage(d), symbol(sym) {}
+
+    virtual ~Unit() = default;
 
     std::string getSymbol() { return symbol; }
     void setSymbol(std::string sym) { symbol = sym; }

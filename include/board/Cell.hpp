@@ -1,18 +1,19 @@
 #pragma once
 #include "../entities/Unit.hpp"
-
+#include <memory>
 class Cell {
-    bool status;
-    Unit* unit;
+    std::unique_ptr<Unit> unit;
 
 public:
-    Cell() : status(false), unit(nullptr) {}
+    Cell() : unit(nullptr) {}
 
-    Unit* getUnit() { return unit; }
+    Unit* getUnit() { return unit.get(); }
     
-    void setUnit(Unit* newObj) { unit = newObj;}
+    void setUnit(std::unique_ptr<Unit> newObj) { unit = std::move(newObj); }
 
-    bool getStatus() { return status; }
+    std::unique_ptr<Unit> releaseUnit() { return std::move(unit); }
 
-    void setStatus(bool st) { status = st; }
+    bool isOccupied() { return unit != nullptr; }
+   
+
 };

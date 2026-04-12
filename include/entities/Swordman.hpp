@@ -4,5 +4,5 @@
 
 class Swordsman: public Unit {
 public:
-    Swordsman(): Unit("S") {}
+    Swordsman(): Unit(100, 15,"S") {}
 };

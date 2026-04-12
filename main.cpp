@@ -6,15 +6,16 @@
 int main() {
     GameBoard gm;
 
-    Mage* m = new Mage();
-    Archer* a = new Archer();
-    Swordsman* s = new Swordsman;
+    auto m = std::make_unique<Mage>();
+    auto a = std::make_unique<Archer>();
+    auto s = std::make_unique<Swordsman>();
 
     Action ac(Point{5,5}, Point{0,0});
 
-    gm.setUnitInBoard(m,Point{2,2});
+    gm.setUnitInBoard(std::move(m),Point{2,2});
 
-    gm.setUnitInBoard(a, Point{3,3});
+    gm.setUnitInBoard(std::move(a), Point{3,3});
+    gm.setUnitInBoard(std::move(s), Point{4,4});
 
     gm.render();
 

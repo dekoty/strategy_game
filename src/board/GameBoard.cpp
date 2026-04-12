@@ -1,15 +1,15 @@
 #include "../../include/board/GameBoard.hpp"
 #include <iostream>
-
+#include <memory>
 GameBoard::GameBoard() {
-        Unit* wall = new Unit("#");
+        std::unique_ptr<Unit> wall = std::make_unique<Unit>("#");
 
-        setUnitInBoard(wall,Point{5, 5});
+        setUnitInBoard(std::move(wall) , Point{5, 5});
     }
 
-void GameBoard::setUnitInBoard(Unit* u, Point p) {
-    board[p.y][p.x].setUnit(u);
-    board[p.y][p.x].setStatus(true);
+void GameBoard::setUnitInBoard(std::unique_ptr<Unit> u, Point p) {
+    board[p.y][p.x].setUnit(std::move(u));
+
 }
 
 
@@ -17,11 +17,10 @@ void GameBoard::moveUnit(Point from, Point target) {
     Cell& cellFrom = getCell(from);
     Cell& cellTarget = getCell(target);
 
-    cellTarget.setUnit(cellFrom.getUnit());
-    cellTarget.setStatus(true);
+    cellTarget.setUnit(cellFrom.releaseUnit());
 
     cellFrom.setUnit(nullptr);
-    cellFrom.setStatus(false);
+
 
 }
 

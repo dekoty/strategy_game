@@ -4,5 +4,5 @@
 
 class Mage: public Unit {
 public:
-    Mage() : Unit("M") {}
+    Mage() : Unit(60, 30, "M") {}
 };
