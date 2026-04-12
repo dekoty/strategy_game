@@ -12,7 +12,7 @@ set(SOURCES
     main.cpp
     src/board/GameBoard.cpp
     src/mechanics/Action.cpp
-   
+    src/core/GameLoop.cpp
   
 )
 

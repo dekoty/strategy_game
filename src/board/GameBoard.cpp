@@ -2,7 +2,7 @@
 #include <iostream>
 #include <memory>
 GameBoard::GameBoard() {
-        std::unique_ptr<Unit> wall = std::make_unique<Unit>("#");
+        std::unique_ptr<Unit> wall = std::make_unique<Unit>(100, 0, "#");
 
         setUnitInBoard(std::move(wall) , Point{5, 5});
     }
