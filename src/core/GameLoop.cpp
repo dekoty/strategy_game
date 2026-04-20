@@ -23,8 +23,6 @@ void GameLoop::run() {
 
 
 void GameLoop::render() {
-    std::system("clear");
-
     board.render();
 }
 

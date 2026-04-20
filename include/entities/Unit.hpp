@@ -1,6 +1,6 @@
 #pragma once
 #include <string>
-
+#include <iostream>
 
 
 class Unit {
@@ -15,4 +15,14 @@ public:
 
     std::string getSymbol() { return symbol; }
     void setSymbol(std::string sym) { symbol = sym; }
+
+    int getDamage() { return damage; }
+
+    void takeDamage(int d) { 
+        if (hp) hp -= d;
+
+        std::cout << getSymbol() << ":"<< hp << std::endl;
+     }
+
+    bool isAlife() { return hp; }
 };
