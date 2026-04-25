@@ -14,15 +14,16 @@ public:
     virtual ~Unit() = default;
 
     std::string getSymbol() { return symbol; }
-    void setSymbol(std::string sym) { symbol = sym; }
+    void setSymbol(std::string sym) const { symbol = sym; }
 
-    int getDamage() { return damage; }
+    int getDamage() const { return damage; }
 
     void takeDamage(int d) { 
-        if (hp) hp -= d;
+        hp -= d;
+        if (hp < 0) hp = 0;
 
         std::cout << getSymbol() << ":"<< hp << std::endl;
      }
 
-    bool isAlife() { return hp; }
+    bool isAlive() const { return hp; }
 };

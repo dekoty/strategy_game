@@ -33,12 +33,26 @@ void GameLoop::processInput() {
 
 
     std::cout << "Введите координаты юнита и цели:";
-    std::cin >>  unit.x >> unit.y  >> target.x >> target.y;
 
+    if (!(std::cin >>  unit.x >> unit.y  >> target.x >> target.y)) {
+        std::cin.clear();
+        std::cin.ignore(10000, '\n');
+        std::cout << "Вводите только числа" << std::endl;
+        
+        return;
+    }
     
-    Action ac(unit, target);
 
-    ac.execute(board);
+    try
+    {
+        Action ac(unit, target);
+        ac.execute(board);
+    }
+    catch(const std::exception& e)
+    {
+        std::cerr << e.what() << std::endl;
+    }
+    
 
 
 }

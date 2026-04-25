@@ -19,8 +19,6 @@ void GameBoard::moveUnit(Point from, Point target) {
 
     cellTarget.setUnit(cellFrom.releaseUnit());
 
-    cellFrom.setUnit(nullptr);
-
 
 }
 
@@ -35,4 +33,12 @@ void GameBoard::render() {
         }
         std::cout << std::endl;
     }
+}
+
+
+void GameBoard::removeUnit(Point p) {
+    Cell& cell = getCell(p);
+
+    if (cell.isOccupied()) cell.setUnit(nullptr);   
+
 }
