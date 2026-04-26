@@ -13,7 +13,8 @@ set(SOURCES
     src/board/GameBoard.cpp
     src/mechanics/Action.cpp
     src/core/GameLoop.cpp
-  
+    src/core/Turn.cpp
+    src/core/Player.cpp
 )
 
 # Создаем исполняемый файл

@@ -29,3 +29,19 @@ public:
 
 };
 
+class NotYourUnitException : public GameException {
+public:
+    NotYourUnitException() : GameException("Попытка управления чужим юнитом!") {}
+};
+
+class FriendlyFireException : public GameException {
+public:
+    FriendlyFireException() : GameException("Нельзя атаковать своих союзников!") {}
+};
+
+class InvalidInputException : public GameException {
+public:
+    InvalidInputException() 
+        : GameException("Ошибка ввода. Ожидались числовые координаты (x1 y1 x2 y2).") {}
+};
+

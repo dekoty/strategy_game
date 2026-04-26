@@ -18,6 +18,10 @@
 
         auto unitT = cellT.getUnit();
 
+        if (unitF->getTeamId() == unitT->getTeamId()) { 
+            throw FriendlyFireException();
+        }
+
         Combat combat(unitF, unitT);
         combat.fight();
 
