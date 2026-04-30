@@ -15,6 +15,7 @@ set(SOURCES
     src/core/GameLoop.cpp
     src/core/Turn.cpp
     src/core/Player.cpp
+    
 )
 
 # Создаем исполняемый файл

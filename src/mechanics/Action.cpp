@@ -13,6 +13,7 @@
 
     if (!cellT.isOccupied()) {
         realBoard.moveUnit(from, target);
+
     } else {
         auto unitF = cellF.getUnit();
 
@@ -29,13 +30,7 @@
             std::cout << "Юнит: " << unitT->getSymbol() << " умер" << std::endl ;
 
             realBoard.removeUnit(target);
+
         }
-
     }
-
-  
-
-
-
-    
 }

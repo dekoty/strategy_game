@@ -10,9 +10,8 @@ class GameBoard {
     Cell board[SIZE][SIZE];
 
 public:
-    GameBoard();
 
-    void setUnitInBoard(std::unique_ptr<Unit> u, Point p);
+    void setUnitInBoard(Unit* u, Point p);
 
     void moveUnit(Point from, Point target);
 
@@ -21,11 +20,12 @@ public:
     void render();
 
     Cell& getCell(const Point& p) {
-        if (p.x > SIZE || p.y > SIZE || p.x < 0  || p.y < 0) {
+        if (p.x >= SIZE || p.y >= SIZE || p.x < 0  || p.y < 0) {
             throw OutOfRangeException();
         }
 
         return board[p.y][p.x];
 
     }
+
 };

@@ -3,7 +3,6 @@
 #include "../core/Player.hpp"
 #include <vector>
 
-
 class Turn {
     std::vector<Player> players;
     int currentPlayerIndex;
@@ -16,11 +15,10 @@ public:
 
     int getRoundNumber() const { return roundNumber; }
 
-    void addPlayer(const Player& player);
+    void addPlayer(Player player);
 
     void nextTurn();
 
-
-    std::vector<Player> getPlayers() { return players; }
+    std::vector<Player>& getPlayers() { return players; }
 
 };

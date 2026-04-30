@@ -2,6 +2,7 @@
 #include "../../include/board/GameBoard.hpp"
 #include "../../include/mechanics/Action.hpp"
 #include "../../include/common/GameException.hpp"
+
 void Player::makeMove(Point from, Point target, GameBoard& board) {
     
     Unit* unit = board.getCell(from).getUnit();

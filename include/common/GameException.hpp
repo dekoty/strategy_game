@@ -4,7 +4,6 @@
 #include <string>
 
 class GameException: public std::exception {
-
     std::string message;
 
 public:
@@ -14,7 +13,6 @@ public:
     
 
 };
-
 
 class OutOfRangeException: public GameException {
 public:

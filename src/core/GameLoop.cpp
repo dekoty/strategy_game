@@ -11,19 +11,14 @@ void GameLoop::init() {
 
 void GameLoop::setupBoard() {
 
-    for (const auto& player : turnManager.getPlayers()) {
+    for ( auto& player : turnManager.getPlayers()) {
         int id = player.getId();
         
         int startY = (id == 1) ? 0 : 9;
 
-        auto m = std::make_unique<Mage>(id);
-        auto a = std::make_unique<Archer>(id);
-        auto s = std::make_unique<Swordsman>(id);
-
-        board.setUnitInBoard(std::move(m), Point{4, startY});
-        board.setUnitInBoard(std::move(a), Point{3, startY});
-        board.setUnitInBoard(std::move(s), Point{5, startY});
-        
+        spawnUnit<Mage>(player, Point{4, startY});
+        spawnUnit<Archer>(player, Point{3, startY});
+        spawnUnit<Swordsman>(player, Point{5, startY});
         
     }
 }
@@ -37,7 +32,7 @@ void GameLoop::run() {
     while (isRunning) {
         render();
 
-        auto currentPlayer = turnManager.getCurrentPlayer();
+        auto& currentPlayer = turnManager.getCurrentPlayer();
 
         std::cout << "---Раунд" << turnManager.getRoundNumber() << "---"<< std::endl;
         std::cout << "Ход игрока" << currentPlayer.getId() << std::endl;
@@ -47,6 +42,14 @@ void GameLoop::run() {
             auto coordinates = processInput();
 
             currentPlayer.makeMove(coordinates.first, coordinates.second, board);
+
+            for (auto& player: turnManager.getPlayers()) {
+                player.getArmy().cleanupDead();
+
+            }
+
+            if (checkGameOver()) break;
+            
 
             turnManager.nextTurn();
           
@@ -88,5 +91,34 @@ std::pair<Point, Point> GameLoop::processInput() {
 
     return {unit, target};
         
+}
 
+void GameLoop::announceWinner(int loseId) {
+    render();
+
+    std::string winnerName;
+
+    for (auto& player: turnManager.getPlayers()) {
+        if (player.getId() != loseId)
+            winnerName = player.getName();
+    }
+
+
+    std::cout << "\n";
+    std::cout << "ИГРА ОКОНЧЕНА" << std::endl;
+    std::cout << "ПОБЕДИТЕЛЬ: " << winnerName << std::endl;
+
+    isRunning = false;
+
+}
+
+bool GameLoop::checkGameOver() {
+    for (auto & player: turnManager.getPlayers()) {
+        if (player.getArmy().isDefeated()) {
+            announceWinner(player.getId());
+            return true;
+        }
+    }
+
+    return false;
 }

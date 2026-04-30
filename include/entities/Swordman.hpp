@@ -1,6 +1,6 @@
 #pragma once
-#include "Unit.hpp"
 
+#include "Unit.hpp"
 
 class Swordsman: public Unit {
 public:

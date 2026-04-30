@@ -1,4 +1,5 @@
 #pragma once
+
 #include "../common/Point.hpp"
 #include "../board/GameBoard.hpp"
 

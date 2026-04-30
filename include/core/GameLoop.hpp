@@ -2,6 +2,7 @@
 
 #include "../board/GameBoard.hpp"
 #include <vector>
+#include <utility>
 #include "../core/Player.hpp"
 #include "../core/Turn.hpp"
 
@@ -23,6 +24,24 @@ public:
     void init();
 
     void setupBoard();
+
+    bool checkGameOver();
+
+    void announceWinner(int loseId);
+
+private:
+    template<typename T>
+    void spawnUnit(Player& player, Point p) {
+
+        auto unit = std::make_unique<T>(player.getId());
+    
+        Unit* ptr = unit.get();
+    
+        board.setUnitInBoard(ptr, p);
+
+        player.getArmy().addUnit(std::move(unit));
+
+    }
 };
 
 

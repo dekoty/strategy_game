@@ -1,8 +1,8 @@
 #include "../../include/core/Turn.hpp"
 
 
-void Turn::addPlayer(const Player& player) {
-    players.push_back(player);
+void Turn::addPlayer(Player player) {
+    players.push_back(std::move(player));
 }
 
 

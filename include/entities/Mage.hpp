@@ -1,6 +1,6 @@
 #pragma once
-#include "Unit.hpp"
 
+#include "Unit.hpp"
 
 class Mage: public Unit {
 public:
