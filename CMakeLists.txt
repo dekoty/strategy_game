@@ -15,7 +15,8 @@ set(SOURCES
     src/core/GameLoop.cpp
     src/core/Turn.cpp
     src/core/Player.cpp
-    
+    src/abilities/Heal.cpp
+    src/common/Logger.cpp
 )
 
 # Создаем исполняемый файл

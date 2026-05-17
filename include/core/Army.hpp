@@ -17,6 +17,8 @@ public:
         return units.empty();
     }
 
+    auto& getUnits() const { return units;}
+
     void cleanupDead() {
         units.erase(std::remove_if(units.begin(), units.end(), [](const auto& u) { return !u->isAlive(); }), units.end());
     }

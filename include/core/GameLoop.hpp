@@ -18,6 +18,8 @@ public:
     void run ();
 
     void render();
+    
+    void renderStats();
 
     std::pair<Point, Point> processInput();
 

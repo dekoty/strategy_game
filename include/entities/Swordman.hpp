@@ -4,5 +4,5 @@
 
 class Swordsman: public Unit {
 public:
-    Swordsman(int id): Unit(100, 15,"S", id) {}
+    Swordsman(int id): Unit(100, 15, 1, 1,"S", id) {}
 };

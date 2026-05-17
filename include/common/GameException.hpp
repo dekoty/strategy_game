@@ -21,9 +21,9 @@ public:
 };
 
 
-class EmptyCellExcpetion: public GameException {
+class EmptyCellException: public GameException {
 public:
-    EmptyCellExcpetion() : GameException("В выбранной клетке нет юнита") {}
+    EmptyCellException() : GameException("В выбранной клетке нет юнита") {}
 
 };
 
@@ -43,3 +43,23 @@ public:
         : GameException("Ошибка ввода. Ожидались числовые координаты (x1 y1 x2 y2).") {}
 };
 
+class TargetOutOfRangeException : public GameException {
+public:
+    TargetOutOfRangeException()
+        : GameException("Юнит не может совершить атаку на такой дистанции!") {}
+};
+
+class TooFarException : public GameException {
+public:
+    TooFarException() : GameException("Юнит не может уйти так далеко!") {}
+};
+
+class HealEnemyException : public GameException {
+public:
+    HealEnemyException() : GameException("Вражеских юнитов лечить нельзя") {}
+};
+
+class NotEnoughManaException : public GameException {
+public:
+    NotEnoughManaException() : GameException("Недостаточно маны!") {}
+};

@@ -4,5 +4,5 @@
 
 class Archer: public Unit {
 public:
-    Archer(int id): Unit(80, 20, "A", id) {}
+    Archer(int id): Unit(80, 20, 4, 2,"A", id) {}
 };
