@@ -17,8 +17,6 @@ public:
 
     void removeUnit(Point p);
 
-    void render();
-
     Cell& getCell(const Point& p) {
         if (p.x >= SIZE || p.y >= SIZE || p.x < 0  || p.y < 0) {
             throw OutOfRangeException();

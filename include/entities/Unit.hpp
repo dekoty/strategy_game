@@ -4,70 +4,67 @@
 #include <iostream>
 #include <memory>
 #include "../abilities/Ability.hpp"
+#include "../common/Logger.hpp"
 
-class Unit {
+struct UnitStats {
     int hp;
+    int maxHp;
     int damage;
     int attackRange;
     int moveRange;
-    int maxHp;
-    int tmId;
-    int mana = 0;
-    int maxMana = 0;
+    int mana;
+    int maxMana;
+
+    UnitStats(int h = 100, int d = 10, int atR = 1, int mvR = 1, int mn = 0)
+        : hp(h), maxHp(h), damage(d), attackRange(atR), moveRange(mvR), mana(mn), maxMana(mn) {}
+};
+
+
+
+
+class Unit {
+    UnitStats stats;
+    int teamId;
     std::string symbol;
     std::unique_ptr<Ability> ability;
 
 public:
-    Unit(int h = 100,int d = 10, int atR = 1 , int mvR = 1,std::string sym = ".", int id = 0) : hp(h), maxHp(h),damage(d),attackRange(atR), moveRange(mvR),symbol(sym), tmId(id) {}
+    Unit(UnitStats s, std::string sym, int id, std::unique_ptr<Ability> ab = nullptr) 
+        : stats(s), teamId(id), symbol(sym), ability(std::move(ab)) {}
 
     virtual ~Unit() = default;
 
     virtual void onTurnEnd() {}
 
-    std::string getSymbol() { return symbol; }
+    const UnitStats& getStats() const { return stats; }
+    std::string getSymbol() const { return symbol; }
+    int getTeamId() const { return teamId; }
+    Ability* getAbility() const { return ability.get(); }
 
-    int getHp() { return hp; }
-
-    int getMaxHp() { return maxHp; }
-    
-    void setSymbol(std::string sym) { symbol = sym; }
-    
-    void setAbility(std::unique_ptr<Ability> ab) { ability = std::move(ab); }
-
-    void setManaAndMx(int mn, int maxMn) { mana = mn; maxMana = maxMn; }
-
-    int getMana() const { return mana; }
-
-    int getMaxMana() const { return maxMana; }
-
-    void useMana(int amount) { mana -= amount; }
-
-    bool hasAbility() { return ability != nullptr; }
-
-    Ability* getAbility() { return ability.get(); }
-
-    int getTeamId() const {return tmId; }
-
-    int getDamage() const { return damage; }
-
-    int getAttackRange() const { return attackRange; }
-
-    int getMoveRange() const { return moveRange; }
+    bool hasAbility() const { return ability != nullptr; }
 
     void takeDamage(int d) { 
-        hp -= d;
-        if (hp < 0) hp = 0;
-
-        std::cout << getSymbol() << ":"<< hp << std::endl;
-     }
-
-    bool isAlive() const { return hp; }
-
-    void heal(int amount) {
-        hp += amount; 
-
-        if (hp > maxHp) hp = maxHp;
-
+        stats.hp -= d;
+        if (stats.hp < 0) stats.hp = 0;
+        Logger::log("Юнит " + symbol + " получает урон. Осталось HP: " + std::to_string(stats.hp));
     }
 
+    void heal(int amount) {
+        stats.hp += amount; 
+        if (stats.hp > stats.maxHp) stats.hp = stats.maxHp;
+    }
+    
+    bool isAlive() const { return stats.hp > 0; }
+
+    void useMana(int amount) {
+        stats.mana -= amount; 
+    }
+
+    void restoreMana(int amount) {
+        stats.mana = std::min(stats.maxMana, stats.mana + amount);
+    }
+
+    void buffDamage(int bonus) {
+        stats.damage += bonus;
+    }
 };

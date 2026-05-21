@@ -2,24 +2,26 @@
 
 #include "../common/Point.hpp"
 #include "../board/GameBoard.hpp"
+#include "../entities/Unit.hpp"
 
-enum class Intent {
-    MoveOrAttack, 
-    UseSpell      
+class IActionStrategy {
+public:
+    virtual ~IActionStrategy() = default;
+    virtual void execute(Unit* unitFrom, Point from, Point target, GameBoard& board) = 0;
+};
+
+class MoveStrategy : public IActionStrategy {
+public:
+    void execute(Unit* unitFrom, Point from, Point target, GameBoard& board) override;
 };
 
 
-class Action {
-    Point from;
-    Point target;
-
+class AttackStrategy : public IActionStrategy {
 public:
-    Action(Point fm, Point tar) : from(fm), target(tar) {}
+    void execute(Unit* unitFrom, Point from, Point target, GameBoard& board) override;
+};
 
-    void execute(GameBoard&  realBoard, Intent intent);
-
-    void setAction(Point fm, Point tg) {
-        from = fm;
-        target = tg;
-    }
+class SpellStrategy : public IActionStrategy {
+public:
+    void execute(Unit* unitFrom, Point from, Point target, GameBoard& board) override;
 };

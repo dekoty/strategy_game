@@ -11,7 +11,7 @@ public:
 
     void fight() {
 
-        defender->takeDamage(attacker->getDamage());
+        defender->takeDamage(attacker->getStats().damage);
     }
 
 };

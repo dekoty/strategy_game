@@ -17,6 +17,7 @@ set(SOURCES
     src/core/Player.cpp
     src/abilities/Heal.cpp
     src/common/Logger.cpp
+    src/core/Renderer.cpp
 )
 
 # Создаем исполняемый файл

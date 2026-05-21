@@ -4,6 +4,7 @@
 #include "../board/GameBoard.hpp"
 #include "../common/Point.hpp"
 #include "../core/Army.hpp"
+#include "../mechanics/Action.hpp"
 
 class Player {
     std::string name;
@@ -13,7 +14,7 @@ class Player {
 public:
     Player(std::string n, int i) : name(n), teamId(i) {}
     
-    void makeMove(Point from, Point target, GameBoard& board);
+    void makeMove(Point from, Point target, GameBoard& board, std::unique_ptr<IActionStrategy> strategy);
 
     int getId() const { return teamId; }
 

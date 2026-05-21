@@ -8,7 +8,7 @@
 
 void Heal::use(Unit* caster, Unit* target) {
     if (target == nullptr) {
-        throw std::runtime_error("Там некого лечить!");
+        throw EmptyCellException(); 
     }
 
     if (target->getTeamId() != caster->getTeamId()) {

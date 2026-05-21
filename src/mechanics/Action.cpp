@@ -1,51 +1,45 @@
 #include "../../include/mechanics/Action.hpp"
 #include "../../include/mechanics/Combat.hpp"
 #include "../../include/common/GameException.hpp"
-#include "../../include/common/Point.hpp"
-#include "../../include/abilities/Ability.hpp"
 
-
-
- void Action::execute(GameBoard&  realBoard, Intent intent) {
-    Cell& cellT = realBoard.getCell(target);
-    Cell& cellF = realBoard.getCell(from);
-    Unit* unitF = cellF.getUnit();
-    Unit* unitT = cellT.getUnit();
-
-    auto distance = calcDistance(target, from);
+void MoveStrategy::execute(Unit* unitF, Point from, Point target, GameBoard& board) {
+    if (board.getCell(target).isOccupied()) throw InvalidInputException();
+    if (calcDistance(from, target) > unitF->getStats().moveRange) throw TooFarException();
     
-    if (cellF.getUnit() == nullptr) {
-        throw EmptyCellException();
-    }
+    board.moveUnit(from, target);
 
-
-
-    if (intent == Intent::UseSpell) {
-        Ability* abil = unitF->getAbility();
+    Cell& targetCell = board.getCell(target);
+    if (targetCell.hasItem()) {
+        Item* item = targetCell.getItem();
         
-        if (unitF->getMana() < abil->getCost()) throw NotEnoughManaException();
-        if (distance > abil->getRange()) throw TargetOutOfRangeException();
-
-        abil->use(unitF, unitT);
-        unitF->useMana(abil->getCost());
-    } 
-
-    else if (!cellT.isOccupied()) {
-        if (distance > unitF->getMoveRange()) throw TooFarException();
-
-        realBoard.moveUnit(from, target);
-    } 
-    else {
-        if (distance > unitF->getAttackRange()) throw TargetOutOfRangeException();
-        if (unitF->getTeamId() == unitT->getTeamId()) throw FriendlyFireException();
-
-        Combat combat(unitF, unitT);
-        combat.fight();
+        item->apply(unitF);
+        
+        targetCell.removeItem();
     }
+}
 
-    if (unitT && !unitT->isAlive()) {
-        std::string msg = "Юнит " + unitT->getSymbol() + " умер";
-        realBoard.removeUnit(target);
+void AttackStrategy::execute(Unit* unitF, Point from, Point target, GameBoard& board) {
+    Unit* unitT = board.getCell(target).getUnit();
+    if (!unitT) throw EmptyCellException();
+    if (calcDistance(from, target) > unitF->getStats().attackRange) throw TargetOutOfRangeException();
+    if (unitF->getTeamId() == unitT->getTeamId()) throw FriendlyFireException();
+
+    Combat combat(unitF, unitT);
+    combat.fight();
+
+    if (!unitT->isAlive()) {
+        board.removeUnit(target);
     }
+}
 
+void SpellStrategy::execute(Unit* unitF, Point from, Point target, GameBoard& board) {
+    Unit* unitT = board.getCell(target).getUnit();
+    Ability* abil = unitF->getAbility();
+    
+    if (!abil) throw InvalidInputException();
+    if (unitF->getStats().mana < abil->getCost()) throw NotEnoughManaException();
+    if (calcDistance(from, target) > abil->getRange()) throw TargetOutOfRangeException();
+
+    abil->use(unitF, unitT);
+    unitF->useMana(abil->getCost());
 }

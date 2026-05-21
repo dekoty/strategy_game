@@ -3,7 +3,12 @@
 #include "../../include/mechanics/Action.hpp"
 #include "../../include/core/Player.hpp"
 #include "../../include/common/Logger.hpp"
+#include "../../include/factory/UnitFactory.hpp"
+#include "../../include/entities/Item.hpp"
 #include <iostream>
+#include <random>
+#include <ctime>
+
 
 void GameLoop::init() {
     turnManager.addPlayer(Player("Player1", 1));
@@ -11,151 +16,125 @@ void GameLoop::init() {
 }
 
 void GameLoop::setupBoard() {
+    MageCreator mageFactory;
+    ArcherCreator archerFactory;
+    SwordsmanCreator swordFactory;
 
-    for ( auto& player : turnManager.getPlayers()) {
-        int id = player.getId();
-        
-        int startY = (id == 1) ? 0 : 9;
+    for (auto& player : turnManager.getPlayers()) {
+        int startY = (player.getId() == 1) ? 0 : 9;
+    
+        auto mage = mageFactory.createUnit(player.getId());
+        board.setUnitInBoard(mage.get(), {4, startY});
+        player.getArmy().addUnit(std::move(mage));
 
-        spawnUnit<Mage>(player, Point{4, startY});
-        spawnUnit<Archer>(player, Point{3, startY});
-        spawnUnit<Swordsman>(player, Point{5, startY});
-        
+        auto archer = archerFactory.createUnit(player.getId());
+        board.setUnitInBoard(archer.get(), {3, startY});
+        player.getArmy().addUnit(std::move(archer));
+
+        auto sword = swordFactory.createUnit(player.getId());
+        board.setUnitInBoard(sword.get(), {5, startY});
+        player.getArmy().addUnit(std::move(sword));
+
     }
+
+    std::srand(std::time(nullptr));
+    for (int i = 0; i < 2; ++i) { 
+        int rx, ry;
+        do {
+            rx = std::rand() % 10;
+            ry = std::rand() % 10;
+        } while (board.getCell({rx, ry}).isOccupied() || board.getCell({rx, ry}).hasItem());
+        
+        board.getCell({rx, ry}).setItem(std::make_unique<ManaPotion>());
+    }
+
 }
 
+void GameLoop::render() {
+
+    renderer.renderBoard(board);
+    renderer.renderStats(turnManager);
+    renderer.renderLogs();
+    renderer.renderError(lastErrorMessage);
+    lastErrorMessage = ""; 
+}
 
 void GameLoop::run() {
-    init();
-
+    init(); 
     setupBoard();
     
     while (isRunning) {
         render();
-
-        auto& currentPlayer = turnManager.getCurrentPlayer();
-
         
-        std::cout << "---Раунд" << turnManager.getRoundNumber() << "---"<< std::endl;
-        std::cout << "Ход игрока" << currentPlayer.getId() << std::endl;
+        auto& currPlayer = turnManager.getCurrentPlayer();
+        std::cout << "---Раунд " << turnManager.getRoundNumber() << "--- Ход игрока " << currPlayer.getId() << "\n";
+        
+        try {
+            auto [from, to] = processInput();
 
-        try
-        {
-            auto coordinates = processInput();
+            std::unique_ptr<IActionStrategy> strategy;
+            Unit* u = board.getCell(from).getUnit();
 
-            currentPlayer.makeMove(coordinates.first, coordinates.second, board);
+            if (u && board.getCell(to).isOccupied()) {
+                if (u->hasAbility()) {
+                    std::cout << "1. Атака\n2. Способность (" << u->getAbility()->getName() << ")\nВыбор: ";
+                    int choice; std::cin >> choice;
+                    
+                    if (choice == 2) {
+                        strategy = std::make_unique<SpellStrategy>();
+                    } else {
+                        strategy = std::make_unique<AttackStrategy>();
+                    }
+                } else {
+                    strategy = std::make_unique<AttackStrategy>();
+                }
+            } else {
+                strategy = std::make_unique<MoveStrategy>();
 
-            for (auto& player: turnManager.getPlayers()) {
-                player.getArmy().cleanupDead();
-
+                if (board.getCell(to).hasItem()) {
+                    std::string itemName = board.getCell(to).getItem()->getName();
+                    Logger::log(u->getSymbol() + " подобрал " + itemName);
+                }
             }
 
+            currPlayer.makeMove(from, to, board, std::move(strategy));
+
+            for (auto& p: turnManager.getPlayers()) p.getArmy().cleanupDead();
             if (checkGameOver()) break;
             
-
             turnManager.nextTurn();
-
-            for (auto& unitPtr : currentPlayer.getArmy().getUnits()) {
-                unitPtr->onTurnEnd();
-            }
-          
-        }
-        catch(const std::exception& e)
-        {
-            lastErrorMessage = e.what();
-        }
-        
-    }
-}
-
-
-void GameLoop::renderStats() {
-    std::cout << "\n=== СОСТОЯНИЕ ВОЙСК ===\n";
-    
-    for (auto& player : turnManager.getPlayers()) {
-        std::cout << "Игрок " << player.getId() << " (" << player.getName() << "):\n";
-        
-        auto& units = player.getArmy().getUnits();
-        if (units.empty()) {
-            std::cout << "  [АРМИЯ УНИЧТОЖЕНА]\n";
-            continue;
-        }
-
-        for (auto& unitPtr : units) {
-            std::cout << "  [" << unitPtr->getSymbol() << "] "
-                      << "HP: " << unitPtr->getHp() << "/" << unitPtr->getMaxHp() << " | "
-                      << "DMG: " << unitPtr->getDamage();
+            for (auto& u : currPlayer.getArmy().getUnits()) u->onTurnEnd();
             
-            if (unitPtr->getMaxMana() > 0) {
-                std::cout << " | MANA: " << unitPtr->getMana() << "/" << unitPtr->getMaxMana();
-            }
-            
-            std::cout << "\n";
+        } catch(const std::exception& e) { 
+            lastErrorMessage = e.what(); 
         }
-        std::cout << "-----------------------\n";
     }
 }
-
-
-
-void GameLoop::render() {
-    std::system("clear");
-    board.render();
-
-    renderStats();
-
-    const auto& logs = Logger::getMessages();
-    if (!logs.empty()) {
-        std::cout << "\n---СОБЫТИЯ ХОДА---\n";
-        for (const auto& msg : logs) {
-            std::cout << "-->" << msg << std::endl;
-        }
-        std::cout << "\n";
-        Logger::clear(); 
-    }
-
-    if (!lastErrorMessage.empty()) {
-        std::cout << "\n[ВНИМАНИЕ]: " << lastErrorMessage << std::endl;
-        lastErrorMessage = ""; 
-    }
-}
-
 
 std::pair<Point, Point> GameLoop::processInput() {
     Point unit;
     Point target;
 
-
-    std::cout << "Введите координаты юнита и цели:";
-
-    if (!(std::cin >>  unit.x >> unit.y  >> target.x >> target.y)) {
+    std::cout << "Введите координаты юнита и цели (x1 y1 x2 y2): ";
+    if (!(std::cin >> unit.x >> unit.y >> target.x >> target.y)) {
         std::cin.clear();
         std::cin.ignore(10000, '\n');
-        
         throw InvalidInputException();
     }
-
     return {unit, target};
-        
 }
 
 void GameLoop::announceWinner(int loseId) {
     render();
 
     std::string winnerName;
-
     for (auto& player: turnManager.getPlayers()) {
         if (player.getId() != loseId)
             winnerName = player.getName();
     }
 
-
-    std::cout << "\n";
-    std::cout << "ИГРА ОКОНЧЕНА" << std::endl;
-    std::cout << "ПОБЕДИТЕЛЬ: " << winnerName << std::endl;
-
+    renderer.renderWinner(winnerName);
     isRunning = false;
-
 }
 
 bool GameLoop::checkGameOver() {
@@ -165,6 +144,5 @@ bool GameLoop::checkGameOver() {
             return true;
         }
     }
-
     return false;
 }
