@@ -27,7 +27,6 @@ class Unit {
     int teamId;
     std::string symbol;
     std::unique_ptr<Ability> ability;
-
 public:
     Unit(UnitStats s, std::string sym, int id, std::unique_ptr<Ability> ab = nullptr) 
         : stats(s), teamId(id), symbol(sym), ability(std::move(ab)) {}

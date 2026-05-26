@@ -3,7 +3,7 @@
 #include <memory>
 
 
-void GameBoard::setUnitInBoard(Unit* u, Point p) {
+void GameBoard::setUnitInBoard(std::shared_ptr<Unit> u, Point p) {
     board[p.y][p.x].setUnit(u);
 
 }

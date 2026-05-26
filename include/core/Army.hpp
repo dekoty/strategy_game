@@ -6,11 +6,11 @@
 #include <algorithm>
 
 class Army {
-    std::vector<std::unique_ptr<Unit>> units;
+    std::vector<std::shared_ptr<Unit>> units;
 
 public:
-    void addUnit(std::unique_ptr<Unit> unit) {
-        units.push_back(std::move(unit));
+    void addUnit(std::shared_ptr<Unit> unit) {
+        units.push_back(unit);
     }
 
     bool isDefeated() const {

@@ -5,17 +5,17 @@
 #include <memory>
 
 class Cell {
-    Unit* unit;
+    std::shared_ptr<Unit> unit;
     std::unique_ptr<Item> item;
 
 public:
-    Cell() : unit(nullptr) {}
+    Cell() : unit(nullptr), item(nullptr) {}
 
-    Unit* getUnit() { return unit; }
+    std::shared_ptr<Unit> getUnit() { return unit; }
     
-    void setUnit(Unit* newObj) { unit = newObj; }
+    void setUnit(std::shared_ptr<Unit> newObj) { unit = newObj; }
 
-    void removeUnit() { unit = nullptr; }
+    void removeUnit() { unit.reset(); }
 
     bool isOccupied() { return unit != nullptr; }
 

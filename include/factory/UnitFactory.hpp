@@ -5,26 +5,26 @@
 class UnitCreator {
 public:
     virtual ~UnitCreator() = default;
-    virtual std::unique_ptr<Unit> createUnit(int teamId) const = 0;
+    virtual std::shared_ptr<Unit> createUnit(int teamId) const = 0;
 };
 
 class SwordsmanCreator : public UnitCreator {
 public:
-    std::unique_ptr<Unit> createUnit(int teamId) const override {
-        return std::make_unique<Swordsman>(teamId);
+    std::shared_ptr<Unit> createUnit(int teamId) const override {
+        return std::make_shared<Swordsman>(teamId);
     }
 };
 
 class ArcherCreator : public UnitCreator {
 public:
-    std::unique_ptr<Unit> createUnit(int teamId) const override {
-        return std::make_unique<Archer>(teamId);
+    std::shared_ptr<Unit> createUnit(int teamId) const override {
+        return std::make_shared<Archer>(teamId);
     }
 };
 
 class MageCreator : public UnitCreator {
 public:
-    std::unique_ptr<Unit> createUnit(int teamId) const override {
-        return std::make_unique<Mage>(teamId);
+    std::shared_ptr<Unit> createUnit(int teamId) const override {
+        return std::make_shared<Mage>(teamId);
     }
 };

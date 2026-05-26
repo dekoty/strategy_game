@@ -19,12 +19,12 @@ void MoveStrategy::execute(Unit* unitF, Point from, Point target, GameBoard& boa
 }
 
 void AttackStrategy::execute(Unit* unitF, Point from, Point target, GameBoard& board) {
-    Unit* unitT = board.getCell(target).getUnit();
+    std::shared_ptr<Unit> unitT = board.getCell(target).getUnit();
     if (!unitT) throw EmptyCellException();
     if (calcDistance(from, target) > unitF->getStats().attackRange) throw TargetOutOfRangeException();
     if (unitF->getTeamId() == unitT->getTeamId()) throw FriendlyFireException();
 
-    Combat combat(unitF, unitT);
+    Combat combat(unitF, unitT.get());
     combat.fight();
 
     if (!unitT->isAlive()) {
@@ -33,13 +33,13 @@ void AttackStrategy::execute(Unit* unitF, Point from, Point target, GameBoard& b
 }
 
 void SpellStrategy::execute(Unit* unitF, Point from, Point target, GameBoard& board) {
-    Unit* unitT = board.getCell(target).getUnit();
+    std::shared_ptr<Unit> unitT = board.getCell(target).getUnit();
     Ability* abil = unitF->getAbility();
     
     if (!abil) throw InvalidInputException();
     if (unitF->getStats().mana < abil->getCost()) throw NotEnoughManaException();
     if (calcDistance(from, target) > abil->getRange()) throw TargetOutOfRangeException();
 
-    abil->use(unitF, unitT);
+    abil->use(unitF, unitT.get());
     unitF->useMana(abil->getCost());
 }

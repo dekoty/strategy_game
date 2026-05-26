@@ -11,7 +11,7 @@ class GameBoard {
 
 public:
 
-    void setUnitInBoard(Unit* u, Point p);
+    void setUnitInBoard(std::shared_ptr<Unit> u, Point p);
 
     void moveUnit(Point from, Point target);
 

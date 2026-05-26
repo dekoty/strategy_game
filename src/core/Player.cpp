@@ -5,10 +5,10 @@
 
 
 void Player::makeMove(Point from, Point target, GameBoard& board, std::unique_ptr<IActionStrategy> strategy) {
-    Unit* unit = board.getCell(from).getUnit();
+    std::shared_ptr<Unit> unit = board.getCell(from).getUnit();
 
     if (unit == nullptr) throw EmptyCellException();
     if (unit->getTeamId() != teamId) throw NotYourUnitException();
 
-    strategy->execute(unit, from, target, board);
+    strategy->execute(unit.get(), from, target, board);
 }

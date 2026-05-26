@@ -24,15 +24,15 @@ void GameLoop::setupBoard() {
         int startY = (player.getId() == 1) ? 0 : 9;
     
         auto mage = mageFactory.createUnit(player.getId());
-        board.setUnitInBoard(mage.get(), {4, startY});
+        board.setUnitInBoard(mage, {4, startY});
         player.getArmy().addUnit(std::move(mage));
 
         auto archer = archerFactory.createUnit(player.getId());
-        board.setUnitInBoard(archer.get(), {3, startY});
+        board.setUnitInBoard(archer, {3, startY});
         player.getArmy().addUnit(std::move(archer));
 
         auto sword = swordFactory.createUnit(player.getId());
-        board.setUnitInBoard(sword.get(), {5, startY});
+        board.setUnitInBoard(sword, {5, startY});
         player.getArmy().addUnit(std::move(sword));
 
     }
@@ -73,9 +73,9 @@ void GameLoop::run() {
             auto [from, to] = processInput();
 
             std::unique_ptr<IActionStrategy> strategy;
-            Unit* u = board.getCell(from).getUnit();
+            std::shared_ptr<Unit> u = board.getCell(from).getUnit();
 
-            if (u && board.getCell(to).isOccupied()) {
+            if (u != nullptr && board.getCell(to).isOccupied()) {
                 if (u->hasAbility()) {
                     std::cout << "1. Атака\n2. Способность (" << u->getAbility()->getName() << ")\nВыбор: ";
                     int choice; std::cin >> choice;

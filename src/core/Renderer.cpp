@@ -19,7 +19,7 @@ void Renderer::renderBoard(GameBoard& board) {
 
         for (int x = 0; x < 10; ++x) {
             Cell& cell = board.getCell({x, y});
-            Unit* u = cell.getUnit();
+            std::shared_ptr<Unit> u = cell.getUnit();
             
             if (u != nullptr) {
                 std::cout << u->getSymbol() << " ";
